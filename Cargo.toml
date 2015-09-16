@@ -1,0 +1,8 @@
+[package]
+name = "vibrant"
+version = "0.1.0"
+authors = ["Pascal Hertleif <killercup@gmail.com>"]
+
+[dependencies]
+image = "0.3.12"
+color_quant = "1.0"
