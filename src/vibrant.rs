@@ -119,7 +119,10 @@ impl fmt::Display for Vibrancy {
                     try!(write!($formatter, $name));
                     if let Some(c) = $color {
                         let rgb = c.channels();
-                        try!(write!($formatter, " Color: #{:X}{:X}{:X}\n", rgb[0], rgb[1], rgb[2]));
+                        try!(write!($formatter,
+                            " Color: #{:02X}{:02X}{:02X}\n",
+                            rgb[0], rgb[1], rgb[2]
+                        ));
                     } else {
                         try!(write!($formatter, " Color: None\n"));
                     }
@@ -141,72 +144,72 @@ impl fmt::Display for Vibrancy {
 fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
     let mut vibrancy = Vibrancy::default();
     vibrancy.primary = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                     &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
             max: settings::MAX_NORMAL_LUMA,
         },
-        &MTM {
+                                                     &MTM {
             min: settings::MIN_VIBRANT_SATURATION,
             target: settings::TARGET_VIBRANT_SATURATION,
             max: 1_f64,
         });
 
     vibrancy.light = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                   &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
             max: 1_f64,
         },
-        &MTM {
+                                                   &MTM {
             min: settings::MIN_VIBRANT_SATURATION,
             target: settings::TARGET_VIBRANT_SATURATION,
             max: 1_f64,
         });
 
     vibrancy.dark = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                  &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
             max: settings::MAX_DARK_LUMA,
         },
-        &MTM {
+                                                  &MTM {
             min: settings::MIN_VIBRANT_SATURATION,
             target: settings::TARGET_VIBRANT_SATURATION,
             max: 1_f64,
         });
 
     vibrancy.muted = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                   &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
             max: settings::MAX_NORMAL_LUMA,
         },
-        &MTM {
+                                                   &MTM {
             min: 0_f64,
             target: settings::TARGET_MUTED_SATURATION,
             max: settings::MAX_MUTED_SATURATION,
         });
 
     vibrancy.light_muted = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                         &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
             max: 1_f64,
         },
-        &MTM {
+                                                         &MTM {
             min: 0_f64,
             target: settings::TARGET_MUTED_SATURATION,
             max: settings::MAX_MUTED_SATURATION,
         });
 
     vibrancy.dark_muted = vibrancy.find_color_variation(palette,
-        &MTM {
+                                                        &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
             max: settings::MAX_DARK_LUMA,
         },
-        &MTM {
+                                                        &MTM {
             min: 0_f64,
             target: settings::TARGET_MUTED_SATURATION,
             max: settings::MAX_MUTED_SATURATION,
