@@ -1,4 +1,5 @@
 use std::fmt;
+use std::collections::BTreeMap;
 
 use itertools::Itertools;
 use image::{GenericImage, Pixel, Rgb, Rgba};
@@ -22,41 +23,47 @@ impl Vibrancy {
         where P: Sized + Pixel<Subpixel = u8>,
               G: Sized + GenericImage<Pixel = P>
     {
-        let important_pixels: Vec<Rgb<u8>> = image.pixels()
-                                                  .map(|(_, _, pixel)| pixel.to_rgba())
-                                                  .filter(filter_boring_pixels)
-                                                  .map(|px| px.to_rgb())
-                                                  .collect();
-
-        let color_count = 64;
-
-        // FIXME: Use iterators.
-        // This didn't work because `[u8]` didn't live long enough
-        // let pixels = image.pixels()
-        // .flat_map(|(_, _, pixel)| pixel.to_rgba().channels().clone().into_iter().cloned())
-        // .collect::<Vec<u8>>()
-
         let mut pixels: Vec<u8> = vec![];
-        for pixel in &important_pixels {
-            for subpixel in pixel.channels() {
+        for (_, _, pixel) in image.pixels() {
+            let rgba = pixel.to_rgba();
+            if is_boring_pixel(&rgba) {
+                continue;
+            }
+
+            for subpixel in rgba.channels() {
                 pixels.push(*subpixel);
             }
         }
 
-        let palette: Vec<Rgb<u8>> =
-            NeuQuant::new(10, color_count, &pixels)
-                .color_map_rgba()
-                .iter()
-                .chunks_lazy(4)
-                .into_iter()
-                .map(|rgba_iter| {
-                        let rgba_slice: Vec<u8> = rgba_iter.cloned().collect();
-                        Rgba::from_slice(&rgba_slice).clone().to_rgb()
-                    })
-                .unique()
-                .collect();
+        const QUALITY: i32 = 10; // in [1...30] where 1 is best
+        const COLOR_COUNT: usize = 256;
 
-        generate_varation_colors(&palette)
+        let quant = NeuQuant::new(QUALITY, COLOR_COUNT, &pixels);
+
+        let pixel_counts = image.pixels()
+                                .map(|(_, _, pixel)| quant.index_of(&pixel.to_rgba().channels()))
+                                .fold(BTreeMap::new(),
+                                      |mut acc, pixel| {
+                                          *acc.entry(pixel).or_insert(0) += 1;
+                                          acc
+                                      });
+
+        let palette: Vec<Rgb<u8>> =
+            quant.color_map_rgba()
+                 .iter()
+                 .chunks_lazy(4)
+                 .into_iter()
+                 .map(|rgba_iter| {
+                         let rgba_slice: Vec<u8> = rgba_iter.cloned().collect();
+                         Rgba::from_slice(&rgba_slice).clone().to_rgb()
+                     })
+                 .unique()
+                 .collect();
+
+        // println!("palette: {:?}", palette);
+        // println!("pixel_counts: {:?}", pixel_counts);
+
+        generate_varation_colors(&palette, &pixel_counts)
     }
 
     fn color_already_set(&self, color: &Rgb<u8>) -> bool {
@@ -67,25 +74,31 @@ impl Vibrancy {
 
     fn find_color_variation(&self,
                             palette: &[Rgb<u8>],
+                            pixel_counts: &BTreeMap<usize, usize>,
                             luma: &MTM<f64>,
                             saturation: &MTM<f64>)
                             -> Option<Rgb<u8>> {
         let mut max = None;
         let mut max_value = 0_f64;
 
-        for swatch in palette {
+        let complete_population = pixel_counts.values().fold(0, |acc, c| acc + c);
+
+        for (index, swatch) in palette.iter().enumerate() {
             let s = HSL::from_pixel(swatch).s;
             let l = HSL::from_pixel(swatch).l;
 
-            if s >= saturation.min && s <= saturation.max &&
-               l >= luma.min && l <= luma.max &&
+            if s >= saturation.min && s <= saturation.max && l >= luma.min && l <= luma.max &&
                !self.color_already_set(swatch) {
+                let population = *pixel_counts.get(&index).unwrap_or(&0) as f64;
+                if population == 0_f64 {
+                    continue;
+                }
                 let value = create_comparison_value(s,
                                                     saturation.target,
                                                     l,
                                                     luma.target,
-                                                    palette.len() as f64,
-                                                    0_f64);
+                                                    population,
+                                                    complete_population as f64);
                 if max.is_none() || value > max_value {
                     max = Some(swatch.clone());
                     max_value = value;
@@ -141,9 +154,12 @@ impl fmt::Display for Vibrancy {
     }
 }
 
-fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
+fn generate_varation_colors(palette: &[Rgb<u8>],
+                            pixel_counts: &BTreeMap<usize, usize>)
+                            -> Vibrancy {
     let mut vibrancy = Vibrancy::default();
     vibrancy.primary = vibrancy.find_color_variation(palette,
+                                                     pixel_counts,
                                                      &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
@@ -156,6 +172,7 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
         });
 
     vibrancy.light = vibrancy.find_color_variation(palette,
+                                                   pixel_counts,
                                                    &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
@@ -168,6 +185,7 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
         });
 
     vibrancy.dark = vibrancy.find_color_variation(palette,
+                                                  pixel_counts,
                                                   &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
@@ -180,6 +198,7 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
         });
 
     vibrancy.muted = vibrancy.find_color_variation(palette,
+                                                   pixel_counts,
                                                    &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
@@ -192,6 +211,7 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
         });
 
     vibrancy.light_muted = vibrancy.find_color_variation(palette,
+                                                         pixel_counts,
                                                          &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
@@ -204,6 +224,7 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
         });
 
     vibrancy.dark_muted = vibrancy.find_color_variation(palette,
+                                                        pixel_counts,
                                                         &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
@@ -218,14 +239,16 @@ fn generate_varation_colors(palette: &[Rgb<u8>]) -> Vibrancy {
     vibrancy
 }
 
-fn filter_boring_pixels(pixel: &Rgba<u8>) -> bool {
+fn is_boring_pixel(pixel: &Rgba<u8>) -> bool {
     let (r, g, b, a) = (pixel[0], pixel[1], pixel[2], pixel[3]);
 
     // If pixel is mostly opaque and not white
     const MIN_ALPHA: u8 = 125;
     const MAX_COLOR: u8 = 250;
 
-    (a >= MIN_ALPHA) && !(r > MAX_COLOR && g > MAX_COLOR && b > MAX_COLOR)
+    let interesting = (a >= MIN_ALPHA) && !(r > MAX_COLOR && g > MAX_COLOR && b > MAX_COLOR);
+
+    !interesting
 }
 
 fn invert_diff(val: f64, target_val: f64) -> f64 {

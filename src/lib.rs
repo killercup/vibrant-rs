@@ -6,4 +6,4 @@ mod settings;
 mod hsl;
 mod vibrant;
 
-pub use vibrant::*;
+pub use vibrant::Vibrancy;

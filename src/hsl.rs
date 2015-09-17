@@ -3,8 +3,8 @@ use image::Pixel;
 
 pub struct HSL {
     pub h: f64, // 0-360 Degree
-    pub s: f64, // 0-100 Percent
-    pub l: f64, // 0-100 Percent
+    pub s: f64, // 0-1 (Percent)
+    pub l: f64, // 0-1 (Percent)
 }
 
 impl HSL {

@@ -2,6 +2,7 @@
 
 pub const TARGET_DARK_LUMA: f64 = 0.26;
 pub const MAX_DARK_LUMA: f64 = 0.45;
+
 pub const MIN_LIGHT_LUMA: f64 = 0.55;
 pub const TARGET_LIGHT_LUMA: f64 = 0.74;
 
