@@ -17,8 +17,8 @@ impl HSL {
         where P: Pixel<Subpixel = u8>
     {
         let mut h: f64;
-        let mut s: f64;
-        let mut l: f64;
+        let s: f64;
+        let l: f64;
 
         let pixel = pixel.clone();
         let rgb = pixel.to_rgb();

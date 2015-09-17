@@ -1,20 +1,20 @@
 #![allow(dead_code)]
 
-const TARGET_DARK_LUMA: f64 = 0.26;
-const MAX_DARK_LUMA: f64 = 0.45;
-const MIN_LIGHT_LUMA: f64 = 0.55;
-const TARGET_LIGHT_LUMA: f64 = 0.74;
+pub const TARGET_DARK_LUMA: f64 = 0.26;
+pub const MAX_DARK_LUMA: f64 = 0.45;
+pub const MIN_LIGHT_LUMA: f64 = 0.55;
+pub const TARGET_LIGHT_LUMA: f64 = 0.74;
 
-const MIN_NORMAL_LUMA: f64 = 0.3;
-const TARGET_NORMAL_LUMA: f64 = 0.5;
-const MAX_NORMAL_LUMA: f64 = 0.7;
+pub const MIN_NORMAL_LUMA: f64 = 0.3;
+pub const TARGET_NORMAL_LUMA: f64 = 0.5;
+pub const MAX_NORMAL_LUMA: f64 = 0.7;
 
-const TARGET_MUTED_SATURATION: f64 = 0.3;
-const MAX_MUTED_SATURATION: f64 = 0.4;
+pub const TARGET_MUTED_SATURATION: f64 = 0.3;
+pub const MAX_MUTED_SATURATION: f64 = 0.4;
 
-const TARGET_VIBRANT_SATURATION: f64 = 1.0;
-const MIN_VIBRANT_SATURATION: f64 = 0.35;
+pub const TARGET_VIBRANT_SATURATION: f64 = 1.0;
+pub const MIN_VIBRANT_SATURATION: f64 = 0.35;
 
-const WEIGHT_SATURATION: f64 = 3.0;
-const WEIGHT_LUMA: f64 = 6.0;
-const WEIGHT_POPULATION: f64 = 1.0;
+pub const WEIGHT_SATURATION: f64 = 3.0;
+pub const WEIGHT_LUMA: f64 = 6.0;
+pub const WEIGHT_POPULATION: f64 = 1.0;

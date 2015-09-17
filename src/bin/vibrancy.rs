@@ -15,5 +15,5 @@ fn main() {
 
     println!("{:?}", img.dimensions());
 
-    println!("{:?}", Vibrancy::new(&img));
+    println!("{}", Vibrancy::new(&img));
 }
