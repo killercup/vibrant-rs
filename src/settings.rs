@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 const TARGET_DARK_LUMA: f64 = 0.26;
 const MAX_DARK_LUMA: f64 = 0.45;
 const MIN_LIGHT_LUMA: f64 = 0.55;
