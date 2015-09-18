@@ -23,25 +23,29 @@ impl Vibrancy {
         where P: Sized + Pixel<Subpixel = u8>,
               G: Sized + GenericImage<Pixel = P>
     {
-        let mut pixels: Vec<u8> = vec![];
-        for (_, _, pixel) in image.pixels() {
-            let rgba = pixel.to_rgba();
+        let pixels: Vec<Rgba<u8>> = image.pixels()
+                                .map(|(_, _, pixel)| pixel.to_rgba() )
+                                .collect();
+
+
+        let mut flat_pixels: Vec<u8> = Vec::with_capacity(pixels.len());
+        for rgba in &pixels {
             if is_boring_pixel(&rgba) {
                 continue;
             }
 
             for subpixel in rgba.channels() {
-                pixels.push(*subpixel);
+                flat_pixels.push(*subpixel);
             }
         }
 
         const QUALITY: i32 = 10; // in [1...30] where 1 is best
         const COLOR_COUNT: usize = 256;
 
-        let quant = NeuQuant::new(QUALITY, COLOR_COUNT, &pixels);
+        let quant = NeuQuant::new(QUALITY, COLOR_COUNT, &flat_pixels);
 
-        let pixel_counts = image.pixels()
-                                .map(|(_, _, pixel)| quant.index_of(&pixel.to_rgba().channels()))
+        let pixel_counts = pixels.iter()
+                                .map(|rgba| quant.index_of(&rgba.channels()))
                                 .fold(BTreeMap::new(),
                                       |mut acc, pixel| {
                                           *acc.entry(pixel).or_insert(0) += 1;
@@ -123,7 +127,7 @@ impl Vibrancy {
 
 impl fmt::Display for Vibrancy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        try!(write!(f, "Vibrancy {{\n"));
+        try!(write!(f, "Vibrant Colors {{\n"));
 
         macro_rules! display_color {
             ($formatter:expr, $name:expr, $color:expr) => {
