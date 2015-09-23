@@ -5,13 +5,22 @@ use itertools::Itertools;
 use image::{GenericImage, Pixel, Rgb, Rgba};
 use color_quant::NeuQuant;
 
+/// Palette of colors.
 #[derive(Debug, Hash, PartialEq, Eq, Default)]
 pub struct Palette {
+    /// Palette of Colors represented in RGB
     pub palette: Vec<Rgb<u8>>,
+    /// A map of indizes in the palette to a count of pixels in approximately that color in the original image.
     pub pixel_counts: BTreeMap<usize, usize>,
 }
 
 impl Palette {
+    /// Create a new palett from an image
+    ///
+    /// Color count and quality are given straight to [color_quant], values should be between
+    /// 8...512 and 1...30 respectively. (By the way: 10 is a good default quality.)
+    ///
+    /// [color_quant]: https://github.com/PistonDevelopers/color_quant
     pub fn new<P, G>(image: &G, color_count: usize, quality: i32) -> Palette
         where P: Sized + Pixel<Subpixel = u8>,
               G: Sized + GenericImage<Pixel = P>
@@ -66,6 +75,7 @@ impl Palette {
         }
     }
 
+    /// Change ordering of colors in palette to be of frequency using the pixel count.
     pub fn sort_by_frequency(&self) -> Self {
         let mut colors = self.palette.clone();
         colors.sort_by(|a, b| self.frequency_of(&a).cmp(&self.frequency_of(&b)));

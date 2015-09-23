@@ -1,11 +1,15 @@
 use std::cmp;
 use image::{Pixel, Rgb};
 
+///
 #[derive(Debug, PartialEq, PartialOrd, Default)]
 pub struct HSL {
-    pub h: f64, // 0-360 Degree
-    pub s: f64, // 0-1 (Percent)
-    pub l: f64, // 0-1 (Percent)
+    /// Hue in 0-360 degree
+    pub h: f64,
+    /// Saturation in 0...1 (percent)
+    pub s: f64,
+    /// Luminosity in 0...1 (percent)
+    pub l: f64,
 }
 
 impl HSL {
@@ -74,6 +78,7 @@ impl HSL {
         HSL { h: h * 360_f64, s: s, l: l }
     }
 
+    /// Convert HSL color to RGB
     pub fn to_rgb(&self) -> Rgb<u8> {
         if self.s == 0.0 {
             // Achromatic, i.e., grey.

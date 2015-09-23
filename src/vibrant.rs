@@ -7,6 +7,9 @@ use hsl::HSL;
 use settings;
 use palette::Palette;
 
+/// Vibrancy
+///
+/// 6 vibrant colors: primary, dark, light, dark muted and light muted.
 #[derive(Debug, Hash, PartialEq, Eq, Default)]
 pub struct Vibrancy {
     primary: Option<Rgb<u8>>,
@@ -18,6 +21,7 @@ pub struct Vibrancy {
 }
 
 impl Vibrancy {
+    /// Create new vibrancy map from an image
     pub fn new<P, G>(image: &G) -> Vibrancy
         where P: Sized + Pixel<Subpixel = u8>,
               G: Sized + GenericImage<Pixel = P>
