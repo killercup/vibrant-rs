@@ -1,3 +1,6 @@
+#![cfg_attr(feature = "dev", feature(plugin))]
+#![cfg_attr(feature = "dev", plugin(clippy))]
+
 extern crate image;
 extern crate color_quant;
 extern crate itertools;

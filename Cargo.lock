@@ -2,6 +2,7 @@
 name = "vibrant"
 version = "0.1.0"
 dependencies = [
+ "clippy 0.0.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "color_quant 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.3.25 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -25,6 +26,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "byteorder"
 version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "clippy"
+version = "0.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unicode-normalization 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "color_quant"
@@ -141,6 +150,11 @@ dependencies = [
 [[package]]
 name = "rustc-serialize"
 version = "0.3.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "unicode-normalization"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
