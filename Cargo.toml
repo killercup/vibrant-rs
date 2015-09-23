@@ -11,4 +11,4 @@ dev = ["clippy"]
 image = "0.3.12"
 color_quant = "1.0"
 itertools = "0.3"
-clippy = { version = "0.0.15", optional = true }
+clippy = { git = "https://github.com/Manishearth/rust-clippy.git", optional = true }
