@@ -7,6 +7,8 @@ extern crate itertools;
 
 mod settings;
 mod hsl;
+mod palette;
 mod vibrant;
 
 pub use vibrant::Vibrancy;
+pub use palette::Palette;

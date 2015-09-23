@@ -1,12 +1,11 @@
 use std::fmt;
 use std::collections::BTreeMap;
 
-use itertools::Itertools;
-use image::{GenericImage, Pixel, Rgb, Rgba};
-use color_quant::NeuQuant;
+use image::{GenericImage, Pixel, Rgb};
 
 use hsl::HSL;
 use settings;
+use palette::Palette;
 
 #[derive(Debug, Hash, PartialEq, Eq, Default)]
 pub struct Vibrancy {
@@ -23,51 +22,7 @@ impl Vibrancy {
         where P: Sized + Pixel<Subpixel = u8>,
               G: Sized + GenericImage<Pixel = P>
     {
-        let pixels: Vec<Rgba<u8>> = image.pixels()
-                                .map(|(_, _, pixel)| pixel.to_rgba() )
-                                .collect();
-
-
-        let mut flat_pixels: Vec<u8> = Vec::with_capacity(pixels.len());
-        for rgba in &pixels {
-            if is_boring_pixel(&rgba) {
-                continue;
-            }
-
-            for subpixel in rgba.channels() {
-                flat_pixels.push(*subpixel);
-            }
-        }
-
-        const QUALITY: i32 = 10; // in [1...30] where 1 is best
-        const COLOR_COUNT: usize = 256;
-
-        let quant = NeuQuant::new(QUALITY, COLOR_COUNT, &flat_pixels);
-
-        let pixel_counts = pixels.iter()
-                                .map(|rgba| quant.index_of(&rgba.channels()))
-                                .fold(BTreeMap::new(),
-                                      |mut acc, pixel| {
-                                          *acc.entry(pixel).or_insert(0) += 1;
-                                          acc
-                                      });
-
-        let palette: Vec<Rgb<u8>> =
-            quant.color_map_rgba()
-                 .iter()
-                 .chunks_lazy(4)
-                 .into_iter()
-                 .map(|rgba_iter| {
-                         let rgba_slice: Vec<u8> = rgba_iter.cloned().collect();
-                         Rgba::from_slice(&rgba_slice).clone().to_rgb()
-                     })
-                 .unique()
-                 .collect();
-
-        // println!("palette: {:?}", palette);
-        // println!("pixel_counts: {:?}", pixel_counts);
-
-        generate_varation_colors(&palette, &pixel_counts)
+        generate_varation_colors(&Palette::new(image, 256, 10))
     }
 
     fn color_already_set(&self, color: &Rgb<u8>) -> bool {
@@ -158,12 +113,10 @@ impl fmt::Display for Vibrancy {
     }
 }
 
-fn generate_varation_colors(palette: &[Rgb<u8>],
-                            pixel_counts: &BTreeMap<usize, usize>)
-                            -> Vibrancy {
+fn generate_varation_colors(p: &Palette) -> Vibrancy {
     let mut vibrancy = Vibrancy::default();
-    vibrancy.primary = vibrancy.find_color_variation(palette,
-                                                     pixel_counts,
+    vibrancy.primary = vibrancy.find_color_variation(&p.palette,
+                                                     &p.pixel_counts,
                                                      &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
@@ -175,8 +128,8 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
             max: 1_f64,
         });
 
-    vibrancy.light = vibrancy.find_color_variation(palette,
-                                                   pixel_counts,
+    vibrancy.light = vibrancy.find_color_variation(&p.palette,
+                                                   &p.pixel_counts,
                                                    &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
@@ -188,8 +141,8 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
             max: 1_f64,
         });
 
-    vibrancy.dark = vibrancy.find_color_variation(palette,
-                                                  pixel_counts,
+    vibrancy.dark = vibrancy.find_color_variation(&p.palette,
+                                                  &p.pixel_counts,
                                                   &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
@@ -201,8 +154,8 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
             max: 1_f64,
         });
 
-    vibrancy.muted = vibrancy.find_color_variation(palette,
-                                                   pixel_counts,
+    vibrancy.muted = vibrancy.find_color_variation(&p.palette,
+                                                   &p.pixel_counts,
                                                    &MTM {
             min: settings::MIN_NORMAL_LUMA,
             target: settings::TARGET_NORMAL_LUMA,
@@ -214,8 +167,8 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
             max: settings::MAX_MUTED_SATURATION,
         });
 
-    vibrancy.light_muted = vibrancy.find_color_variation(palette,
-                                                         pixel_counts,
+    vibrancy.light_muted = vibrancy.find_color_variation(&p.palette,
+                                                         &p.pixel_counts,
                                                          &MTM {
             min: settings::MIN_LIGHT_LUMA,
             target: settings::TARGET_LIGHT_LUMA,
@@ -227,8 +180,8 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
             max: settings::MAX_MUTED_SATURATION,
         });
 
-    vibrancy.dark_muted = vibrancy.find_color_variation(palette,
-                                                        pixel_counts,
+    vibrancy.dark_muted = vibrancy.find_color_variation(&p.palette,
+                                                        &p.pixel_counts,
                                                         &MTM {
             min: 0_f64,
             target: settings::TARGET_DARK_LUMA,
@@ -241,18 +194,6 @@ fn generate_varation_colors(palette: &[Rgb<u8>],
         });
 
     vibrancy
-}
-
-fn is_boring_pixel(pixel: &Rgba<u8>) -> bool {
-    let (r, g, b, a) = (pixel[0], pixel[1], pixel[2], pixel[3]);
-
-    // If pixel is mostly opaque and not white
-    const MIN_ALPHA: u8 = 125;
-    const MAX_COLOR: u8 = 250;
-
-    let interesting = (a >= MIN_ALPHA) && !(r > MAX_COLOR && g > MAX_COLOR && b > MAX_COLOR);
-
-    !interesting
 }
 
 fn invert_diff(val: f64, target_val: f64) -> f64 {
