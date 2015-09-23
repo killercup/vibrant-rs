@@ -74,7 +74,7 @@ impl HSL {
 #[cfg(test)]
 mod test {
     macro_rules! test_rgb_to_hsl {
-        (($r:expr, $g:expr, $b:expr) => ($h:expr, $s:expr, $l:expr)) => {
+        (($r:expr, $g:expr, $b:expr) <=> ($h:expr, $s:expr, $l:expr)) => {
             {
                 // Round gracefully to half a percent
                 const EPSILON: f64 = 0.05;
@@ -109,27 +109,27 @@ mod test {
     #[test]
     fn rgb_to_hsl() {
         // black
-        test_rgb_to_hsl!( (0, 0, 0) => (0_f64, 0_f64, 0_f64) );
+        test_rgb_to_hsl!( (0, 0, 0) <=> (0_f64, 0_f64, 0_f64) );
 
         // white
-        test_rgb_to_hsl!( (255, 255, 255) => (0_f64, 0_f64, 1_f64) );
+        test_rgb_to_hsl!( (255, 255, 255) <=> (0_f64, 0_f64, 1_f64) );
 
         // http://rgb.to/rgb/18,35,67
-        test_rgb_to_hsl!( (18, 35, 67) => (219_f64, 0.58_f64, 0.17_f64) );
+        test_rgb_to_hsl!( (18, 35, 67) <=> (219_f64, 0.58_f64, 0.17_f64) );
 
         // http://rgb.to/hex/93c6cd
-        test_rgb_to_hsl!( (147, 198, 205) => (187_f64, 0.37_f64, 0.69_f64) );
+        test_rgb_to_hsl!( (147, 198, 205) <=> (187_f64, 0.37_f64, 0.69_f64) );
 
         // http://rgb.to/hex/bada55
-        test_rgb_to_hsl!( (186, 218, 85) => (74_f64, 0.64_f64, 0.59_f64) );
+        test_rgb_to_hsl!( (186, 218, 85) <=> (74_f64, 0.64_f64, 0.59_f64) );
 
         // http://rgb.to/hex/ff0
-        test_rgb_to_hsl!( (255, 255, 0) => (60_f64, 1_f64, 0.5_f64) );
+        test_rgb_to_hsl!( (255, 255, 0) <=> (60_f64, 1_f64, 0.5_f64) );
 
         // http://rgb.to/rgb/198,250,172
-        test_rgb_to_hsl!( (198, 250, 172) => (100_f64, 0.89_f64, 0.83_f64) );
+        test_rgb_to_hsl!( (198, 250, 172) <=> (100_f64, 0.89_f64, 0.83_f64) );
 
         // http://rgb.to/hex/faadc7
-        test_rgb_to_hsl!( (250, 173, 199) => (340_f64, 0.89_f64, 0.83_f64) );
+        test_rgb_to_hsl!( (250, 173, 199) <=> (340_f64, 0.89_f64, 0.83_f64) );
     }
 }
