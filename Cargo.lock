@@ -2,7 +2,7 @@
 name = "vibrant"
 version = "0.1.0"
 dependencies = [
- "clippy 0.0.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy 0.0.15 (git+https://github.com/Manishearth/rust-clippy.git)",
  "color_quant 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.3.25 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -30,7 +30,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "clippy"
 version = "0.0.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/Manishearth/rust-clippy.git#4838e8a3b4539ffc7feb9bfa2e2c72b00c55f0b5"
 dependencies = [
  "unicode-normalization 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

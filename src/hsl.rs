@@ -26,6 +26,7 @@ impl HSL {
     }
 
     /// Convert RGB pixel (as array of three bytes) to HSL.
+    #[cfg_attr(feature = "dev", allow(float_cmp))]
     fn from_rgb(rgb: &[u8]) -> HSL {
         let mut h: f64;
         let s: f64;
@@ -109,6 +110,7 @@ fn percent_to_byte(percent: f64) -> u8 {
 }
 
 fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
+    // Normalize
     let t = if t < 0.0 {
         t + 1.0
     } else if t > 1.0 {
@@ -117,7 +119,7 @@ fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
         t
     };
 
-    let res = if t < 1.0 / 6.0 {
+    if t < 1.0 / 6.0 {
         p + (q - p) * 6.0 * t
     } else if t < 1.0 / 2.0 {
         q
@@ -125,9 +127,7 @@ fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
         p + (q - p) * (2.0 / 3.0 - t) * 6.0
     } else {
         p
-    };
-
-    res
+    }
 }
 
 #[cfg(test)]
