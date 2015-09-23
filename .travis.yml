@@ -4,6 +4,9 @@ rust:
 - nightly
 - beta
 - stable
+matrix:
+  allow_failures:
+    - rust: nightly # unstable compiler plugins and stuff
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
