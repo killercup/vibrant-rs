@@ -2,7 +2,7 @@
 
 Extract vibrant colors from an image file. Can be used as a library, but also contains a simple executable.
 
-[![Build Status](https://travis-ci.org/killercup/vibrant-rs.svg)](https://travis-ci.org/killercup/vibrant-rs)
+[![Build Status](https://travis-ci.org/killercup/vibrant-rs.svg)](https://travis-ci.org/killercup/vibrant-rs) [![Coverage Status](https://coveralls.io/repos/killercup/vibrant-rs/badge.svg?branch=master&service=github)](https://coveralls.io/github/killercup/vibrant-rs?branch=master)
 
 ## Getting Started
 
