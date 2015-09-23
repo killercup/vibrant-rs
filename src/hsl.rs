@@ -1,6 +1,7 @@
 use std::cmp;
-use image::Pixel;
+use image::{Pixel, Rgb};
 
+#[derive(Debug, PartialEq, PartialOrd, Default)]
 pub struct HSL {
     pub h: f64, // 0-360 Degree
     pub s: f64, // 0-1 (Percent)
@@ -8,21 +9,24 @@ pub struct HSL {
 }
 
 impl HSL {
-    /// Convert Pixel value to HSL
+    /// Convert pixel value to HSL
     ///
-    /// Algorithm from [go-color] by Brandon Thomson <bt@brandonthomson.com>.
+    /// Algorithm from [go-color] by Brandon Thomson <bt@brandonthomson.com>. (Iternally converts
+    /// the pixel to RGB before converting it to HSL.)
     ///
     /// [go-color]: https://github.com/bthomson/go-color
     pub fn from_pixel<P>(pixel: &P) -> HSL
         where P: Pixel<Subpixel = u8>
     {
+        HSL::from_rgb(pixel.to_rgb().channels())
+    }
+
+    /// Convert RGB pixel (as array of three bytes) to HSL.
+    fn from_rgb(rgb: &[u8]) -> HSL {
         let mut h: f64;
         let s: f64;
         let l: f64;
 
-        let pixel = pixel.clone();
-        let rgb = pixel.to_rgb();
-        let rgb = rgb.channels();
         let (r, g, b) = (rgb[0], rgb[1], rgb[2]);
 
         let max = cmp::max(cmp::max(r, g), b);
@@ -69,6 +73,56 @@ impl HSL {
 
         HSL { h: h * 360_f64, s: s, l: l }
     }
+
+    pub fn to_rgb(&self) -> Rgb<u8> {
+        if self.s == 0.0 {
+            // Achromatic, i.e., grey.
+            let l = percent_to_byte(self.l);
+            return Rgb::from_channels(l, l, l, 255);
+        }
+
+        let h = self.h / 360.0; // treat this as 0..1 instead of degrees
+        let s = self.s;
+        let l = self.l;
+
+        let q = if l < 0.5 {
+            l * (1.0 + s)
+        } else {
+            l + s - (l * s)
+        };
+        let p = 2.0 * l - q;
+
+        Rgb::from_channels(percent_to_byte(hue_to_rgb(p, q, h + 1.0 / 3.0)),
+                           percent_to_byte(hue_to_rgb(p, q, h)),
+                           percent_to_byte(hue_to_rgb(p, q, h - 1.0 / 3.0)),
+                           255)
+    }
+}
+
+fn percent_to_byte(percent: f64) -> u8 {
+    (percent * 255.0).round() as u8
+}
+
+fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
+    let t = if t < 0.0 {
+        t + 1.0
+    } else if t > 1.0 {
+        t - 1.0
+    } else {
+        t
+    };
+
+    let res = if t < 1.0 / 6.0 {
+        p + (q - p) * 6.0 * t
+    } else if t < 1.0 / 2.0 {
+        q
+    } else if t < 2.0 / 3.0 {
+        p + (q - p) * (2.0 / 3.0 - t) * 6.0
+    } else {
+        p
+    };
+
+    res
 }
 
 #[cfg(test)]
