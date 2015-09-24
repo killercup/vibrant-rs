@@ -29,7 +29,6 @@ impl Palette {
                                          .map(|(_, _, pixel)| pixel.to_rgba())
                                          .collect();
 
-
         let mut flat_pixels: Vec<u8> = Vec::with_capacity(pixels.len());
         for rgba in &pixels {
             if is_boring_pixel(&rgba) {
