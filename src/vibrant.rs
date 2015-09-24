@@ -119,65 +119,67 @@ impl fmt::Display for Vibrancy {
 
 fn generate_varation_colors(p: &Palette) -> Vibrancy {
     let mut vibrancy = Vibrancy::default();
-    vibrancy.primary = vibrancy.find_color_variation(&p.palette,
-                                                     &p.pixel_counts,
-                                                     &MTM {
-            min: settings::MIN_NORMAL_LUMA,
-            target: settings::TARGET_NORMAL_LUMA,
-            max: settings::MAX_NORMAL_LUMA,
-        },
-                                                     &MTM {
-            min: settings::MIN_VIBRANT_SATURATION,
-            target: settings::TARGET_VIBRANT_SATURATION,
-            max: 1_f64,
-        });
+    vibrancy.primary =
+        vibrancy.find_color_variation(&p.palette,
+                                      &p.pixel_counts,
+                                      &MTM {
+                                          min: settings::MIN_NORMAL_LUMA,
+                                          target: settings::TARGET_NORMAL_LUMA,
+                                          max: settings::MAX_NORMAL_LUMA,
+                                      },
+                                      &MTM {
+                                          min: settings::MIN_VIBRANT_SATURATION,
+                                          target: settings::TARGET_VIBRANT_SATURATION,
+                                          max: 1_f64,
+                                      });
 
-    vibrancy.light = vibrancy.find_color_variation(&p.palette,
-                                                   &p.pixel_counts,
-                                                   &MTM {
-            min: settings::MIN_LIGHT_LUMA,
-            target: settings::TARGET_LIGHT_LUMA,
-            max: 1_f64,
-        },
-                                                   &MTM {
-            min: settings::MIN_VIBRANT_SATURATION,
-            target: settings::TARGET_VIBRANT_SATURATION,
-            max: 1_f64,
-        });
+    vibrancy.light =
+        vibrancy.find_color_variation(&p.palette,
+                                      &p.pixel_counts,
+                                      &MTM {
+                                          min: settings::MIN_LIGHT_LUMA,
+                                          target: settings::TARGET_LIGHT_LUMA,
+                                          max: 1_f64,
+                                      },
+                                      &MTM {
+                                          min: settings::MIN_VIBRANT_SATURATION,
+                                          target: settings::TARGET_VIBRANT_SATURATION,
+                                          max: 1_f64,
+                                      });
 
     vibrancy.dark = vibrancy.find_color_variation(&p.palette,
                                                   &p.pixel_counts,
                                                   &MTM {
-            min: 0_f64,
-            target: settings::TARGET_DARK_LUMA,
-            max: settings::MAX_DARK_LUMA,
-        },
+                                                      min: 0_f64,
+                                                      target: settings::TARGET_DARK_LUMA,
+                                                      max: settings::MAX_DARK_LUMA,
+                                                  },
                                                   &MTM {
-            min: settings::MIN_VIBRANT_SATURATION,
-            target: settings::TARGET_VIBRANT_SATURATION,
-            max: 1_f64,
-        });
+                                                      min: settings::MIN_VIBRANT_SATURATION,
+                                                      target: settings::TARGET_VIBRANT_SATURATION,
+                                                      max: 1_f64,
+                                                  });
 
     vibrancy.muted = vibrancy.find_color_variation(&p.palette,
                                                    &p.pixel_counts,
                                                    &MTM {
-            min: settings::MIN_NORMAL_LUMA,
-            target: settings::TARGET_NORMAL_LUMA,
-            max: settings::MAX_NORMAL_LUMA,
-        },
+                                                       min: settings::MIN_NORMAL_LUMA,
+                                                       target: settings::TARGET_NORMAL_LUMA,
+                                                       max: settings::MAX_NORMAL_LUMA,
+                                                   },
                                                    &MTM {
-            min: 0_f64,
-            target: settings::TARGET_MUTED_SATURATION,
-            max: settings::MAX_MUTED_SATURATION,
-        });
+                                                       min: 0_f64,
+                                                       target: settings::TARGET_MUTED_SATURATION,
+                                                       max: settings::MAX_MUTED_SATURATION,
+                                                   });
 
     vibrancy.light_muted = vibrancy.find_color_variation(&p.palette,
                                                          &p.pixel_counts,
                                                          &MTM {
-            min: settings::MIN_LIGHT_LUMA,
-            target: settings::TARGET_LIGHT_LUMA,
-            max: 1_f64,
-        },
+                                                             min: settings::MIN_LIGHT_LUMA,
+                                                             target: settings::TARGET_LIGHT_LUMA,
+                                                             max: 1_f64,
+                                                         },
                                                          &MTM {
             min: 0_f64,
             target: settings::TARGET_MUTED_SATURATION,
@@ -187,10 +189,10 @@ fn generate_varation_colors(p: &Palette) -> Vibrancy {
     vibrancy.dark_muted = vibrancy.find_color_variation(&p.palette,
                                                         &p.pixel_counts,
                                                         &MTM {
-            min: 0_f64,
-            target: settings::TARGET_DARK_LUMA,
-            max: settings::MAX_DARK_LUMA,
-        },
+                                                            min: 0_f64,
+                                                            target: settings::TARGET_DARK_LUMA,
+                                                            max: settings::MAX_DARK_LUMA,
+                                                        },
                                                         &MTM {
             min: 0_f64,
             target: settings::TARGET_MUTED_SATURATION,
@@ -220,11 +222,9 @@ fn create_comparison_value(sat: f64,
                            population: f64,
                            max_population: f64)
                            -> f64 {
-    weighted_mean(&[
-        (invert_diff(sat, target_sat),   settings::WEIGHT_SATURATION),
-        (invert_diff(luma, target_uma),  settings::WEIGHT_LUMA),
-        (population / max_population,    settings::WEIGHT_POPULATION),
-    ])
+    weighted_mean(&[(invert_diff(sat, target_sat), settings::WEIGHT_SATURATION),
+                    (invert_diff(luma, target_uma), settings::WEIGHT_LUMA),
+                    (population / max_population, settings::WEIGHT_POPULATION)])
 }
 
 /// Minimum, Maximum, Target

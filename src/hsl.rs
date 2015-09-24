@@ -1,7 +1,7 @@
 use std::cmp;
 use image::{Pixel, Rgb};
 
-///
+/// Color represented in HSL
 #[derive(Debug, PartialEq, PartialOrd, Default)]
 pub struct HSL {
     /// Hue in 0-360 degree
@@ -48,7 +48,7 @@ impl HSL {
         let delta: f64 = max - min;
         if delta == 0_f64 {
     		// it's gray
-            return HSL { h: 0_f64, s: 0_f64, l: l};
+            return HSL { h: 0_f64, s: 0_f64, l: l };
         }
 
         // it's not gray
@@ -109,6 +109,9 @@ fn percent_to_byte(percent: f64) -> u8 {
     (percent * 255.0).round() as u8
 }
 
+/// Convert Hue to RGB Ratio
+///
+/// From <https://github.com/jariz/vibrant.js/> by Jari Zwarts
 fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
     // Normalize
     let t = if t < 0.0 {
