@@ -7,6 +7,7 @@ homepage = "https://github.com/killercup/vibrant-rs.git"
 license = "MIT"
 readme = "README.md"
 documentation = "http://killercup.github.io/vibrant-rs/"
+description = "Extract vibrant colors from an image file. Can be used as a library, but also contains a simple executable."
 
 [features]
 default = []
@@ -16,5 +17,5 @@ dev = ["clippy"]
 image = "0.3.12"
 color_quant = "1.0"
 itertools = "0.3"
-clippy = { git = "https://github.com/Manishearth/rust-clippy.git", optional = true }
+clippy = { version = "0.0.15", optional = true }
 hsl = "0.1"
