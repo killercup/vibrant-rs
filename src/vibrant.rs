@@ -47,8 +47,7 @@ impl Vibrancy {
         let complete_population = pixel_counts.values().fold(0, |acc, c| acc + c);
 
         for (index, swatch) in palette.iter().enumerate() {
-            let s = HSL::from_pixel(swatch).s;
-            let l = HSL::from_pixel(swatch).l;
+            let HSL {h: _, s, l} = HSL::from_rgb(swatch.channels());
 
             if s >= saturation.min && s <= saturation.max && l >= luma.min && l <= luma.max &&
                !self.color_already_set(swatch) {
