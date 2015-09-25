@@ -14,9 +14,9 @@
 extern crate image;
 extern crate color_quant;
 extern crate itertools;
+extern crate hsl;
 
 mod settings;
-mod hsl;
 mod palette;
 mod vibrant;
 

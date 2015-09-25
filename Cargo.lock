@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
  "clippy 0.0.16 (git+https://github.com/Manishearth/rust-clippy.git)",
  "color_quant 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hsl 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.3.25 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -78,6 +79,11 @@ dependencies = [
 [[package]]
 name = "glob"
 version = "0.2.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "hsl"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
