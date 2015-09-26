@@ -50,17 +50,16 @@ impl Palette {
                                            acc
                                        });
 
-        let palette: Vec<Rgb<u8>> =
-            quant.color_map_rgba()
-                 .iter()
-                 .chunks_lazy(4)
-                 .into_iter()
-                 .map(|rgba_iter| {
-                         let rgba_slice: Vec<u8> = rgba_iter.cloned().collect();
-                         Rgba::from_slice(&rgba_slice).clone().to_rgb()
-                     })
-                 .unique()
-                 .collect();
+        let palette: Vec<Rgb<u8>> = quant.color_map_rgba()
+                                         .iter()
+                                         .chunks_lazy(4)
+                                         .into_iter()
+                                         .map(|rgba_iter| {
+                                             let rgba_slice: Vec<u8> = rgba_iter.cloned().collect();
+                                             Rgba::from_slice(&rgba_slice).clone().to_rgb()
+                                         })
+                                         .unique()
+                                         .collect();
 
         Palette { palette: palette, pixel_counts: pixel_counts }
     }

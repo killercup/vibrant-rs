@@ -132,19 +132,18 @@ fn generate_varation_colors(p: &Palette) -> Vibrancy {
                                           max: 1_f64,
                                       });
 
-    vibrancy.light =
-        vibrancy.find_color_variation(&p.palette,
-                                      &p.pixel_counts,
-                                      &MTM {
-                                          min: settings::MIN_LIGHT_LUMA,
-                                          target: settings::TARGET_LIGHT_LUMA,
-                                          max: 1_f64,
-                                      },
-                                      &MTM {
-                                          min: settings::MIN_VIBRANT_SATURATION,
-                                          target: settings::TARGET_VIBRANT_SATURATION,
-                                          max: 1_f64,
-                                      });
+    vibrancy.light = vibrancy.find_color_variation(&p.palette,
+                                                   &p.pixel_counts,
+                                                   &MTM {
+                                                       min: settings::MIN_LIGHT_LUMA,
+                                                       target: settings::TARGET_LIGHT_LUMA,
+                                                       max: 1_f64,
+                                                   },
+                                                   &MTM {
+                                                       min: settings::MIN_VIBRANT_SATURATION,
+                                                       target: settings::TARGET_VIBRANT_SATURATION,
+                                                       max: 1_f64,
+                                                   });
 
     vibrancy.dark = vibrancy.find_color_variation(&p.palette,
                                                   &p.pixel_counts,
@@ -221,9 +220,11 @@ fn create_comparison_value(sat: f64,
                            population: f64,
                            max_population: f64)
                            -> f64 {
-    weighted_mean(&[(invert_diff(sat, target_sat), settings::WEIGHT_SATURATION),
+    weighted_mean(&[(invert_diff(sat, target_sat),
+                     settings::WEIGHT_SATURATION),
                     (invert_diff(luma, target_uma), settings::WEIGHT_LUMA),
-                    (population / max_population, settings::WEIGHT_POPULATION)])
+                    (population / max_population,
+                     settings::WEIGHT_POPULATION)])
 }
 
 /// Minimum, Maximum, Target
