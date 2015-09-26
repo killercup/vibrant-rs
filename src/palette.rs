@@ -10,7 +10,7 @@ use color_quant::NeuQuant;
 pub struct Palette {
     /// Palette of Colors represented in RGB
     pub palette: Vec<Rgb<u8>>,
-    /// A map of indizes in the palette to a count of pixels in approximately that color in the original image.
+    /// A map of indices in the palette to a count of pixels in approximately that color in the
     pub pixel_counts: BTreeMap<usize, usize>,
 }
 
