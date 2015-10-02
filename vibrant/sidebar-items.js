@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Palette","Palette of colors."],["Vibrancy","Vibrancy"]]});
