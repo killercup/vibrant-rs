@@ -11,6 +11,7 @@ pub struct Palette {
     /// Palette of Colors represented in RGB
     pub palette: Vec<Rgb<u8>>,
     /// A map of indices in the palette to a count of pixels in approximately that color in the
+    /// original image.
     pub pixel_counts: BTreeMap<usize, usize>,
 }
 
@@ -61,7 +62,10 @@ impl Palette {
                                          .unique()
                                          .collect();
 
-        Palette { palette: palette, pixel_counts: pixel_counts }
+        Palette {
+            palette: palette,
+            pixel_counts: pixel_counts,
+        }
     }
 
     fn frequency_of(&self, color: &Rgb<u8>) -> usize {
@@ -78,7 +82,10 @@ impl Palette {
         let mut colors = self.palette.clone();
         colors.sort_by(|a, b| self.frequency_of(&a).cmp(&self.frequency_of(&b)));
 
-        Palette { palette: colors, pixel_counts: self.pixel_counts.clone() }
+        Palette {
+            palette: colors,
+            pixel_counts: self.pixel_counts.clone(),
+        }
     }
 }
 
